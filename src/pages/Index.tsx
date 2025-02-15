@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -9,22 +10,22 @@ import type { ImageRecord } from "@/types/api";
 
 const inspirationArtworks = [{
   id: 1,
-  title: "Abstract Harmony",
-  artist: "Sarah Ahmed",
-  grade: "Grade 12",
-  imageUrl: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+  title: "Innocence Under Siege",
+  artist: "Waleed Ajmal",
+  grade: "Grade IS2A",
+  imageUrl: "https://i.ibb.co/Fk1fHsXF/0-0.jpg"
 }, {
   id: 2,
-  title: "Digital Dreams",
-  artist: "Ali Hassan",
-  grade: "Grade 11",
-  imageUrl: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+  title: "Duty and Destruction",
+  artist: "Shaheer Afzal",
+  grade: "Grade IS2A",
+  imageUrl: "https://i.ibb.co/m5JPMRGm/0-3-3.jpg"
 }, {
   id: 3,
-  title: "Nature's Palette",
-  artist: "Fatima Khan",
-  grade: "Grade 12",
-  imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+  title: "Honor in the Arena",
+  artist: "Mansoor Ahmed Toor",
+  grade: "Grade IS2A",
+  imageUrl: "https://i.ibb.co/vv1LQqZw/0-1.jpg"
 }];
 
 const features = [{
