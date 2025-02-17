@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,9 @@ import { api } from "@/lib/api";
 import { ArrowLeft } from "lucide-react";
 
 const Upload = () => {
+  const [searchParams] = useSearchParams();
+  const initialType = searchParams.get("type") as "ai" | "handdrawn" | null;
+
   useEffect(() => {
     document.title = "Upload Artwork - LGS JTI ART SUBMISSIONS";
   }, []);
@@ -18,8 +21,17 @@ const Upload = () => {
   const [grade, setGrade] = useState("");
   const [title, setTitle] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [submissionType] = useState<"ai" | "handdrawn" | null>(initialType);
+  const [aiGenerator, setAiGenerator] = useState("");
+  const [aiPrompt, setAiPrompt] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!initialType) {
+      navigate('/');
+    }
+  }, [initialType, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,10 +44,25 @@ const Upload = () => {
       return;
     }
 
+    if (submissionType === "ai" && (!aiGenerator || !aiPrompt)) {
+      toast({
+        title: "Missing AI Information",
+        description: "Please provide the AI generator name and prompt used",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsUploading(true);
     const formData = new FormData();
     formData.append("image", image);
-    formData.append("datefield", JSON.stringify({ studentName, grade, title }));
+    formData.append("datefield", JSON.stringify({
+      studentName,
+      grade,
+      title,
+      type: submissionType,
+      ...(submissionType === "ai" ? { aiGenerator, aiPrompt } : {})
+    }));
 
     try {
       console.log('Uploading file:', image.name, 'Type:', image.type, 'Size:', image.size);
@@ -60,7 +87,6 @@ const Upload = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      // Check if the file is an image
       if (!selectedFile.type.startsWith('image/')) {
         toast({
           title: "Invalid File Type",
@@ -73,6 +99,10 @@ const Upload = () => {
       setImage(selectedFile);
     }
   };
+
+  if (!submissionType) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen w-full">
@@ -89,7 +119,9 @@ const Upload = () => {
           animate={{ opacity: 1, y: 0 }}
           className="glass rounded-xl p-8"
         >
-          <h1 className="text-3xl font-bold text-white mb-8">Submit Your Artwork</h1>
+          <h1 className="text-3xl font-bold text-white mb-8">
+            Submit {submissionType === "ai" ? "AI Generated" : "Hand Drawn"} Artwork
+          </h1>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -130,6 +162,35 @@ const Upload = () => {
                 placeholder="Give your artwork a title"
               />
             </div>
+
+            {submissionType === "ai" && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-200 mb-2">
+                    AI Generator Used
+                  </label>
+                  <Input
+                    type="text"
+                    value={aiGenerator}
+                    onChange={(e) => setAiGenerator(e.target.value)}
+                    className="w-full"
+                    placeholder="e.g. DALL-E, Midjourney"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-200 mb-2">
+                    Prompt Used
+                  </label>
+                  <Input
+                    type="text"
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                    className="w-full"
+                    placeholder="Enter the prompt used to generate the image"
+                  />
+                </div>
+              </>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-2">
